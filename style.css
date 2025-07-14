@@ -92,3 +92,21 @@ nav button:hover {
     align-items: center;
   }
 }
+#estadisticas h2 {
+  text-align: center;
+  color: #0059b2;
+  margin-bottom: 1rem;
+}
+
+#estadisticasContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-width: 600px;
+  margin: 0 auto;
+  background: #ffffff;
+  padding: 1rem;
+  border: 2px solid #007bff;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.05);
+}

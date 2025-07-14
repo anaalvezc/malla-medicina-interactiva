@@ -133,3 +133,44 @@ document.getElementById("agregarOptativa").onclick = () => {
   mostrarMaterias(getAnioActual());
   actualizarProgreso();
 };
+function actualizarEstadisticas() {
+  const container = document.getElementById("estadisticasContainer");
+  container.innerHTML = "";
+
+  let totalCreditos = 0;
+  let porAnio = {};
+
+  materias.forEach(m => {
+    const aprobado = materiasAprobadas.includes(m.codigo);
+    if (aprobado) {
+      totalCreditos += m.creditos;
+      const anio = m.anio;
+
+      if (!porAnio[anio]) {
+        porAnio[anio] = { total: 0, porSemestre: {} };
+      }
+
+      porAnio[anio].total += m.creditos;
+
+      const sem = m.semestre || 1;
+      if (!porAnio[anio].porSemestre[sem]) {
+        porAnio[anio].porSemestre[sem] = 0;
+      }
+
+      porAnio[anio].porSemestre[sem] += m.creditos;
+    }
+  });
+
+  const porcentaje = ((totalCreditos / TOTAL_CREDITOS) * 100).toFixed(1);
+
+  container.innerHTML += `<strong>Total de créditos aprobados: ${totalCreditos} / ${TOTAL_CREDITOS} (${porcentaje}%)</strong>`;
+
+  Object.entries(porAnio).forEach(([anio, info]) => {
+    const nombre = anio === \"Internado\" ? \"Internado\" : `${anio}° Año`;
+    container.innerHTML += `<hr><strong>${nombre}:</strong> ${info.total} créditos`;
+
+    Object.entries(info.porSemestre).forEach(([sem, cr]) => {
+      container.innerHTML += `<div style=\"margin-left:1rem;\">• Semestre ${sem}: ${cr} créditos</div>`;
+    });
+  });
+}

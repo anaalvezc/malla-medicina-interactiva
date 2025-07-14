@@ -92,7 +92,10 @@ function actualizarProgreso() {
 
   barra.value = creditos;
   textoProgreso.textContent = `${creditos} / ${TOTAL_CREDITOS} créditos`;
+
+  actualizarEstadisticas(); // 👈 Esto es lo que conecta la parte de estadísticas
 }
+
 
 function getAnioActual() {
   const visibles = contenedor.querySelectorAll(".materia");

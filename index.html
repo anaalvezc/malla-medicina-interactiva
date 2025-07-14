@@ -3,25 +3,23 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Malla Medicina Udelar</title>
+  <title>Malla Curricular Medicina UdelaR</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <header>
-    <h1>Malla Interactiva - Medicina Udelar</h1>
+    <h1>Malla Curricular Medicina UdelaR</h1>
     <div class="progreso-container">
-      <label>Progreso de Créditos:</label>
+      <label>Créditos obtenidos:</label>
       <progress id="barraProgreso" max="741" value="0"></progress>
       <span id="progresoTexto">0 / 741 créditos</span>
     </div>
-    <nav id="navegacion">
-      <!-- Se va a llenar con botones por año (1° a 6° + internado) -->
-    </nav>
+    <nav id="navegacion"></nav>
+    <button id="resetear" style="margin-top: 1rem; padding: 10px;">Resetear malla</button>
+    <button id="agregarOptativa" style="margin-top: 1rem; padding: 10px;">Agregar materia optativa</button>
   </header>
 
-  <main id="contenedorMaterias">
-    <!-- Acá van las materias por año y semestre -->
-  </main>
+  <main id="contenedorMaterias"></main>
 
   <script src="script.js"></script>
 </body>

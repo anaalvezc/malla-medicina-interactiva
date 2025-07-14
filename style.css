@@ -1,0 +1,76 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  background: #f0f8ff;
+  color: #333;
+}
+
+header {
+  background-color: #0059b2;
+  color: white;
+  padding: 1rem;
+  text-align: center;
+}
+
+h1 {
+  margin-bottom: 0.5rem;
+}
+
+.progreso-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+progress {
+  width: 80%;
+  height: 20px;
+  margin: 0.5rem 0;
+}
+
+nav {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+nav button {
+  background-color: #007bff;
+  color: white;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+nav button:hover {
+  background-color: #0059b2;
+}
+
+#contenedorMaterias {
+  padding: 2rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1rem;
+}
+
+.materia {
+  background-color: white;
+  border: 2px solid #007bff;
+  border-radius: 10px;
+  padding: 1rem;
+  transition: all 0.3s ease;
+}
+
+.materia.tachada {
+  text-decoration: line-through;
+  opacity: 0.6;
+  border-color: #aaa;
+}
+
+.materia.aprobada {
+  background-color: #d4f7dc;
+  border-color: #28a745;
+}

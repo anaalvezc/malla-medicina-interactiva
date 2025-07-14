@@ -7,32 +7,30 @@ const textoProgreso = document.getElementById("progresoTexto");
 const nav = document.getElementById("navegacion");
 const TOTAL_CREDITOS = 741;
 
-// Cargar materias desde el archivo materias.json
 fetch("materias.json")
   .then(res => res.json())
   .then(data => {
     materias = data;
     crearNavegacion();
-    mostrarMaterias(1); // Mostrar primero 1er año
+    mostrarMaterias(1);
     actualizarProgreso();
   });
 
-// Crear botones de navegación por año
 function crearNavegacion() {
-  const anios = [...new Set(materias.map(m => m.anio))];
+  const anios = [...new Set(materias.map(m => m.anio))].sort((a, b) => {
+    if (a === "Internado") return 1;
+    if (b === "Internado") return -1;
+    return a - b;
+  });
+
   anios.forEach(anio => {
     const btn = document.createElement("button");
-    btn.textContent = `${anio}° Año`;
+    btn.textContent = anio === "Internado" ? "Internado" : `${anio}° Año`;
     btn.onclick = () => mostrarMaterias(anio);
     nav.appendChild(btn);
   });
-  const btnInternado = document.createElement("button");
-  btnInternado.textContent = "Internado";
-  btnInternado.onclick = () => mostrarMaterias("Internado");
-  nav.appendChild(btnInternado);
 }
 
-// Mostrar materias del año seleccionado
 function mostrarMaterias(anio) {
   contenedor.innerHTML = "";
 
@@ -42,12 +40,14 @@ function mostrarMaterias(anio) {
     div.classList.add("materia");
     div.innerHTML = `<strong>${m.nombre}</strong><br>${m.creditos} créditos`;
 
-    if (!previasCumplidas(m)) {
-      div.classList.add("tachada");
-    }
+    const estaAprobada = materiasAprobadas.includes(m.codigo);
+    const tienePrevias = previasCumplidas(m);
+    const cumpleEspecial = requisitosEspecialesCumplidos(m);
 
-    if (materiasAprobadas.includes(m.codigo)) {
+    if (estaAprobada) {
       div.classList.add("aprobada");
+    } else if (!tienePrevias || !cumpleEspecial) {
+      div.classList.add("tachada");
     }
 
     div.onclick = () => toggleMateria(m.codigo);
@@ -55,13 +55,24 @@ function mostrarMaterias(anio) {
   });
 }
 
-// Revisar si las previas están aprobadas
 function previasCumplidas(materia) {
   if (!materia.previas || materia.previas.length === 0) return true;
   return materia.previas.every(p => materiasAprobadas.includes(p));
 }
 
-// Marcar o desmarcar como aprobada
+function requisitosEspecialesCumplidos(materia) {
+  if (!materia.requisitosEspeciales) return true;
+
+  if (materia.requisitosEspeciales.tipo === "condicional") {
+    const tieneBioestadistica = materiasAprobadas.includes("MIBES");
+    const posibles = ["MBCM", "MAT2", "MANAT", "MHBIO", "HIST", "BCC3N", "BCC4C", "BCC5", "BCC6"];
+    const algunaMas = posibles.some(cod => materiasAprobadas.includes(cod));
+    return tieneBioestadistica && algunaMas;
+  }
+
+  return true;
+}
+
 function toggleMateria(codigo) {
   const index = materiasAprobadas.indexOf(codigo);
   if (index > -1) {
@@ -74,7 +85,6 @@ function toggleMateria(codigo) {
   actualizarProgreso();
 }
 
-// Mostrar la barra de progreso
 function actualizarProgreso() {
   let creditos = materias
     .filter(m => materiasAprobadas.includes(m.codigo))
@@ -84,11 +94,42 @@ function actualizarProgreso() {
   textoProgreso.textContent = `${creditos} / ${TOTAL_CREDITOS} créditos`;
 }
 
-// Saber en qué año estoy parada (para refrescar bien)
 function getAnioActual() {
-  const materiasVisibles = contenedor.querySelectorAll(".materia");
-  if (materiasVisibles.length === 0) return 1;
-  const nombre = materiasVisibles[0].querySelector("strong").textContent;
+  const visibles = contenedor.querySelectorAll(".materia");
+  if (visibles.length === 0) return 1;
+  const nombre = visibles[0].querySelector("strong").textContent;
   const materia = materias.find(m => m.nombre === nombre);
   return materia?.anio || 1;
 }
+
+document.getElementById("resetear").onclick = () => {
+  if (confirm("¿Estás segura de que querés borrar todo?")) {
+    localStorage.removeItem("materiasAprobadas");
+    materiasAprobadas = [];
+    mostrarMaterias(getAnioActual());
+    actualizarProgreso();
+  }
+};
+
+document.getElementById("agregarOptativa").onclick = () => {
+  const nombre = prompt("Nombre de la materia:");
+  if (!nombre) return;
+
+  const creditos = parseInt(prompt("¿Cuántos créditos otorga?"));
+  if (isNaN(creditos)) return;
+
+  const nueva = {
+    codigo: "OPT" + Date.now(),
+    nombre,
+    anio: getAnioActual(),
+    semestre: 1,
+    creditos,
+    previas: []
+  };
+
+  materias.push(nueva);
+  materiasAprobadas.push(nueva.codigo);
+  localStorage.setItem("materiasAprobadas", JSON.stringify(materiasAprobadas));
+  mostrarMaterias(getAnioActual());
+  actualizarProgreso();
+};
